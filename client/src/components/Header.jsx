@@ -15,12 +15,27 @@ const Header = () => {
           <span className="text-blue-700 border-e-black">blogging</span>{" "}
           <br></br> platform.
         </h1>
+        <p className="my-6 sm:my-8 max-w-2xl m-auto max-sm:text-xs text-gray-500 ">
+          This is your space to think out loud, to share what matters, and to
+          write without filters. Whether it's one word or a thousand, your story
+          starts right here.
+        </p>
+
+        <form className="flex-justify-between max-w-lg max-sm:scale-75 mx-auto border border-gray-300 bg-white rounded overflow-hidden">
+          <input
+            type="text"
+            placeholder="Search For blogs"
+            required
+            className="w-full pl-4 outline-none"
+          />
+          <button
+            type="submit"
+            className="bg-purple-500 text-white px-8 py-2 m-1.5 rounded hover:bg-purple-600 hover:scale-105 transition-all cursor-pointer"
+          >
+            Search
+          </button>{" "}
+        </form>
       </div>
-      <p className="my-6 sm:my-8 max-w-2xl m-auto max-sm:text-xs text-gray-500 ">
-        This is your space to think out loud, to share what matters, and to
-        write without filters. Whether it's one word or a thousand, your story
-        starts right here.
-      </p>
 
       <img
         src={assets.gradientBackground}
