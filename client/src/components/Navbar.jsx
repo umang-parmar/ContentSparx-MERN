@@ -20,7 +20,7 @@ const Navbar = () => {
         onClick={() => {
           navigate("/admin");
         }}
-        className="flex items-center gap-2 rounded-full text-sm cursor-pointer text-white bg-blue-700 px-10 py-2.5"
+        className="flex items-center gap-2 rounded-full text-sm cursor-pointer text-white bg-blue-700 px-10 py-2.5 hover:bg-blue-900 hover:scale-105"
       >
         Login
         <img src={assets.arrow} className="w-3" alt="arrow" />
