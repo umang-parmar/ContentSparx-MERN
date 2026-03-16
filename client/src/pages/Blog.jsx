@@ -3,6 +3,8 @@ import { assets, blog_data, comments_data } from "../assets/assets";
 import { useEffect, useState } from "react";
 import Navbar from "../components/Navbar";
 import Moment from "moment";
+import Footer from "../components/Footer";
+import Loader from "../components/Loader";
 
 // for the blogs display into the detail
 
@@ -11,6 +13,10 @@ const Blog = () => {
 
   const [data, setData] = useState(null);
   const [comments, setComments] = useState([]);
+
+  // for the add comment form add and store into the state (name and textarea)
+  const [name, setName] = useState("");
+  const [content, setContent] = useState("");
 
   const fetchBlogData = async () => {
     const data = blog_data.find((item) => item._id === id);
@@ -21,7 +27,7 @@ const Blog = () => {
     setComments(comments_data);
   };
 
-   const addComment = async (e) => {
+  const addComment = async (e) => {
     e.preventDefault();
   };
 
@@ -91,12 +97,16 @@ const Blog = () => {
             className="flex flex-col items-start gap-4 max-w-lg"
           >
             <input
+              onChange={(e) => setName(e.target.value)}
+              value={name}
               type="text"
               placeholder="Name"
               required
               className="w-full p-2 border border-gray-300 rounded outline-none"
             />
             <textarea
+              onChange={(e) => setContent(e.target.value)}
+              value={content}
               className="w-full p-2 border border-gray-300 rounded outline-none h-48"
               placeholder="Comment"
               required
@@ -109,11 +119,21 @@ const Blog = () => {
             </button>
           </form>
         </div>
+        {/* Share Buttons  */}
+        <div className="my-24 max-w-3xl mx-auto">
+          <p className="font-semibold my-4">
+            Share this article on social media
+          </p>
+          <div className="flex">
+            <img src={assets.facebook_icon} width={50} alt=""></img>
+            <img src={assets.twitter_icon} width={50} alt=""></img>
+            <img src={assets.googleplus_icon} width={50} alt=""></img>
+          </div>
+        </div>
       </div>
+      <Footer />
     </div>
-  ) : (
-    <div>Loading...</div>
-  );
+  ) : <Loader/>  //for the load to wrong id enter page
 };
 
 export default Blog;
