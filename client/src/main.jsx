@@ -10,6 +10,7 @@ import Dashboard from "./pages/admin/Dashboard.jsx";
 import AddBlog from "./pages/admin/AddBlog.jsx";
 import ListBlog from "./pages/admin/ListBlog.jsx";
 import Comments from "./pages/admin/Comments.jsx";
+import Login from "./components/admin/Login.jsx";
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
@@ -19,7 +20,7 @@ createRoot(document.getElementById("root")).render(
         <Route path="/blog/:id" element={<Blog />} />
 
         {/* for the admin dashboard */}
-        <Route path="/admin" element={<Layout/>}>
+        <Route path="/admin" element={true ? <Layout/> : <Login />}>
           {/* using outlet component use these child components  */}
           <Route index element={<Dashboard/>}/>
           <Route path="addBlog" element={<AddBlog/>}/>
