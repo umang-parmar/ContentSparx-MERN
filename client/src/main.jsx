@@ -20,6 +20,7 @@ createRoot(document.getElementById("root")).render(
 
         {/* for the admin dashboard */}
         <Route path="/admin" element={<Layout/>}>
+          {/* using outlet component use these child components  */}
           <Route index element={<Dashboard/>}/>
           <Route path="addBlog" element={<AddBlog/>}/>
           <Route path="listBlog" element={<ListBlog/>}/>
@@ -27,6 +28,6 @@ createRoot(document.getElementById("root")).render(
         </Route>
         
       </Routes>
-    </BrowserRouter>
-  </StrictMode>,
+    </BrowserRouter>                                   
+  </StrictMode> 
 );
