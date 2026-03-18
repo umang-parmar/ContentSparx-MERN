@@ -12,6 +12,8 @@ import ListBlog from "./pages/admin/ListBlog.jsx";
 import Comments from "./pages/admin/Comments.jsx";
 import Login from "./components/admin/Login.jsx";
 
+import 'quill/dist/quill.snow.css'  
+
 createRoot(document.getElementById("root")).render(
   <StrictMode>
     <BrowserRouter>
