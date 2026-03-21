@@ -1,6 +1,7 @@
 import express from "express";
 import mongoose from "mongoose";
 import cors from "cors";
+import blogRouter from "./routes/blogRoutes.js";
 
 const app = express();
 
@@ -10,12 +11,15 @@ async function main() {
   );
 }
 
+//middleware
 app.use(express.json());
 app.use(cors());
 
+//Routes
 app.get("/", async (req, res) => {
   res.send("welcome");
 });
+app.use('/api/blog', blogRouter)
 
 app.listen(3000, async () => {
   console.log("server is started");
