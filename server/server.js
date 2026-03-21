@@ -1,3 +1,9 @@
+import dotenv from "dotenv";
+dotenv.config({ path: "./.env" });
+
+console.log("PUBLIC KEY:", process.env.IMAGEKIT_PUBLIC_KEY);
+console.log("PRIVATE KEY:", process.env.IMAGEKIT_PRIVATE_KEY);
+
 import express from "express";
 import mongoose from "mongoose";
 import cors from "cors";
@@ -11,15 +17,16 @@ async function main() {
   );
 }
 
-//middleware
+// middleware
 app.use(express.json());
 app.use(cors());
 
-//Routes
+// Routes
 app.get("/", async (req, res) => {
   res.send("welcome");
 });
-app.use('/api/blog', blogRouter)
+
+app.use("/api/blog", blogRouter);
 
 app.listen(3000, async () => {
   console.log("server is started");
@@ -27,4 +34,4 @@ app.listen(3000, async () => {
   console.log("mongo connected");
 });
 
-export default app;
+console.log(process.env.IMAGEKIT_PUBLIC_KEY);
