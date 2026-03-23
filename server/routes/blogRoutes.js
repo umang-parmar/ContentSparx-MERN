@@ -1,10 +1,10 @@
-import express from 'express';
-import { addBlog } from '../controllers/BlogController.js';
-import upload from '../middleware/multer.js';
+// import express from 'express';
+// import { addBlog } from '../controllers/BlogController.js';
+// import upload from '../middleware/multer.js';
  
-const blogRouter = express.Router();
+// const blogRouter = express.Router();
 
-blogRouter.post("/add",upload.single('image') ,addBlog)
+// blogRouter.post("/add",upload.single('image') ,addBlog)
 
 
-export default blogRouter;
+// export default blogRouter;

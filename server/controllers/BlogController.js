@@ -1,42 +1,50 @@
-import fs from 'fs'
-import imagekit from '../configs/ImageKit.js';
-import Blog from '../models/Blog.js'
-export const addBlog = async (req, res) => {
-    try {
-        const { title, subTitle, description, category, isPublished } = JSON.parse(req.body.Blog);
-        const imagefile = req.file;
+// import fs from "fs";
+// import imagekit from "../configs/ImageKit.js";
+// import Blog from "../models/Blog.js";
 
-        //check if all fields are present
-        if (!title || !description || !category || !imageFile) {
-            return res.json({ success: false, message: "Missing required fields" })
-        }
+// export const addBlog = async (req, res) => {
+//   try {
 
-        const fileBuffer = fs.readFileSync(imagefile.path);
-        // Upload Image To ImageKit 
+//     console.log("BODY:", req.body);
+//     console.log("FILE:", req.file);
 
-        const responce = await imagekit.upload({
-            file: fileBuffer,
-            fileName: imageFile.originalname,
-            folder: "/blogs"
-        })
+//     const { title, subTitle, description, category, isPublished } = req.body;
+//     const imageFile = req.file;
 
-        // optimization through imagekit URL transformation 
-        const optimizedImageUrl = imagekit.url({
-            path: responce.filePath,
-            transformation: [
-                { quality: 'auto' }, //auto compression
-                { format: 'webp' },//convert to modern format 
-                { width: "1280" } //width resizing 
-            ]
-        });
+//     // Validate fields
+//     if (!title || !description || !category || !imageFile) {
+//       return res.json({ success: false, message: "Missing required fields" });
+//     }
 
-        const image = optimizedImageUrl;
+//     // Read file
+//     const fileBuffer = fs.readFileSync(imageFile.path);
 
-        await Blog.create({ title, subTitle, description, category, image, isPublished, })
-        res.json({ sucess: true, message: "Blog Added Successfully" })
+//     // Upload to ImageKit
+//     const response = await imagekit.upload({
+//       file: fileBuffer,
+//       fileName: imageFile.originalname,
+//       folder: "/blogs"
+//     });
 
-    } catch (error) {
-        res.json({ sucess: false, message: error.message })
+//     const image = response.url;
 
-    }
-}
+//     // Save blog
+//     await Blog.create({
+//       title,
+//       subTitle,
+//       description,
+//       category,
+//       image,
+//       isPublished: isPublished === "true" // convert string → boolean
+//     });
+
+//     // Delete local file after upload
+//     fs.unlinkSync(imageFile.path);
+
+//     res.json({ success: true, message: "Blog Added Successfully" });
+
+//   } catch (error) {
+//     console.log("ERROR:", error);
+//     res.json({ success: false, message: error.message });
+//   }
+// };
