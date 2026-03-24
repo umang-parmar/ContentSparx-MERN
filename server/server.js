@@ -69,3 +69,6 @@ app.post("/blog/toggle-publish", async (req, res) => {
   await blog.save();
   res.json({ msg: "Publish status updated", isPublished: blog.isPublished });
 })
+
+//add comment 
+
