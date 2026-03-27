@@ -70,5 +70,28 @@ app.post("/blog/toggle-publish", async (req, res) => {
   res.json({ msg: "Publish status updated", isPublished: blog.isPublished });
 })
 
-//add comment 
+//For the comment on the blogs--------------------------------------------------------------------------   
+
+const commentSchema = new mongoose.Schema({
+  blog: { type: mongoose.Schema.Types.ObjectId, ref: 'blog', required: true },
+  name: { type: String, required: true },
+  content: { type: String, required: true },
+  isApproved: { type: Boolean, default: false },
+}, { timestamps: true });
+
+const Comment = mongoose.model("Comment", commentSchema);
+
+app.post("/add-comment", async (req, res) => {
+  const { blog, name, content } = req.body;
+  await Comment.create({ blog, name, content }) //create new data into the DB
+  res.json({ success: true, message: 'Comment added for review' })
+})
+
+app.post("/comments", async (req, res) => {
+  const { blogId } = req.body;
+  const comments = await Comment.find({ blog: blogId, isApproved: true }).sort({ createdAt: -1 });
+  res.json({ success: true, comments })
+})
+
+
 
