@@ -53,11 +53,14 @@ app.get("/blog/:id", async (req, res) => {
   res.json({ singleBlog });
 });
 
-//delete blog
+//delete blog by id 
 app.get("/blog/delete/:id", async (req, res) => {
   const { id } = req.params;
-  console.log(id)
   const deleteBlog = await Blog.deleteOne({ _id: id });
+ 
+  //Delete All Comments Associated With The Blog
+  await Comment.deleteMany({blog:id });
+
   res.json({ msg: "Delete" });
 });
 
@@ -93,5 +96,43 @@ app.post("/comments", async (req, res) => {
   res.json({ success: true, comments })
 })
 
+//--------------------------------------------------------------------------------------------------------------
 
+//get bloglist for admin find all blog post doesnt matter isApproved or not
+app.get("/blogs", async (req, res) => {
+  const blogs = await Blog.find({}).sort({ createdAt: -1 });
+  res.json({ success: true, blogs })
+})
 
+//admin can see all comments doesnt matter isApproved or not
+app.get("/comments", async (req, res) => {
+  const comments = await Comment.find({}).populate("blog").sort({ createdAt: -1 });
+  res.json({ success: true, comments })
+})
+
+//get dashboard data total blog,comment,draft number etc...
+app.get("/dashboard", async (req, res) => {
+  const recentBlogs = await Blog.find({}).sort({ cratedAt: -1 }).limit(5);
+  const blogs = await Blog.countDocuments(); // total no. of blogs count
+  const comments = await Comment.countDocuments(); //total no. of comments
+  const drafts = await Blog.countDocuments({ isPublished: false }); //blog is not published which is counted into the draft
+
+  const dashboardData = {
+    blogs, comments, drafts, recentBlogs
+  }
+  res.json({ success: true, dashboardData })
+})
+
+//Delete the comment by id 
+app.post("/delete-comment", async (req, res) => {
+  const { id } = req.body;
+  await Comment.findByIdAndDelete(id);
+  res.json({ success: true, message: "comment deleted successfully" })
+})
+
+//Approve the comment by id 
+app.post("/approve-comment", async (req, res) => {
+  const { id } = req.body;
+  await Comment.findByIdAndUpdate(id,{isApproved:true});
+  res.json({ success: true, message: "comment Approved successfully" })
+})
