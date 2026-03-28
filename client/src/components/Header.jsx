@@ -1,7 +1,23 @@
-import React from "react";
+import React, { useRef } from "react";
 import { assets } from "../assets/assets";
+import { useAppContext } from "../context/AppContext";
 
 const Header = () => {
+
+  const { setInput, input } = useAppContext()
+  const inputRef = useRef()
+
+  const onSubmitHandler = async (e) => {
+    e.preventDefault();
+    setInput(inputRef.current.value)
+  }
+
+  const onClear = async () => {
+    setInput("")
+    inputRef.current.value = ''
+  }
+
+
   return (
     <div className="mx-8 sm:mx-16 xl:mx-24 relative">
       <div className="text-center mt-20 mb-8">
@@ -10,9 +26,9 @@ const Header = () => {
           <img src={assets.star_icon} className="w-2.5" alt="" />
         </div>
         <h1 className="text-3xl sm:text-6xl font-semibold sm:leading-16 text-gray-700">
-          {" "}
+
           Your own{" "}
-          <span className="text-blue-700 border-e-black">blogging</span>{" "}
+          <span className="text-blue-700 border-e-black">blogging</span>
           <br></br> platform.
         </h1>
         <p className="my-6 sm:my-8 max-w-2xl m-auto max-sm:text-xs text-gray-500 ">
@@ -21,8 +37,8 @@ const Header = () => {
           starts right here.
         </p>
 
-        <form className="flex-justify-between max-w-lg max-sm:scale-75 mx-auto border border-gray-300 bg-white rounded overflow-hidden">
-          <input
+        <form onSubmit={onSubmitHandler} className="flex-justify-between max-w-lg max-sm:scale-75 mx-auto border border-gray-300 bg-white rounded overflow-hidden">
+          <input ref={inputRef}
             type="text"
             placeholder="Search For blogs"
             required
@@ -33,8 +49,12 @@ const Header = () => {
             className="bg-blue-500 text-white px-8 py-2 m-1.5 rounded-full hover:bg-blue-900 hover:scale-105 transition-all cursor-pointer"
           >
             Search
-          </button>{" "}
+          </button>
         </form>
+      </div>
+
+      <div className='text-center '>
+        {input && <button onClick={onClear} className="border font-light text-xs py-1 px-3 rounded-sm shadow-custom-sm cursor-pointer">Clear Search</button>}
       </div>
 
       <img
