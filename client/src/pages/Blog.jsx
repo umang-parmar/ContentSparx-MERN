@@ -5,11 +5,14 @@ import Navbar from "../components/Navbar";
 import Moment from "moment";
 import Footer from "../components/Footer";
 import Loader from "../components/Loader";
+import { useAppContext } from "../context/AppContext";
 
 // for the blogs display into the detail
 
 const Blog = () => {
   const { id } = useParams();
+
+  const { axios } = useAppContext
 
   const [data, setData] = useState(null);
   const [comments, setComments] = useState([]);
@@ -19,16 +22,45 @@ const Blog = () => {
   const [content, setContent] = useState("");
 
   const fetchBlogData = async () => {
-    const data = blog_data.find((item) => item._id === id);
-    setData(data); //set the the according to the id backend and client
+    try {
+      const { data } = await axios.get(`/blog/${id}`)
+      data.success ? setData(data.blog) : toast.error(data.message)
+    } catch (error) {
+      error.error(data.message)
+    }
+    //set the the according to the id backend and client
   };
 
   const fetchComments = async (e) => {
-    setComments(comments_data);
-  };
+    try {
+      const { data } = await axios.post('/comments',{blogId: id})
+      if(data.success){
+        setComments(data.comments)
+      }else{
+        toast.error(data.message);
+      }
 
+    } catch (error) {
+        toast.error(error.message);
+
+    }
+  };
+//post a new comment functionality 
   const addComment = async (e) => {
     e.preventDefault();
+    try {
+      const { data } = await axios.post('/add-comment',{blog: id,name,content})
+     if(data.success){
+      toast.success(data.message)
+      setName('')
+      setContent('')
+    }else{
+        toast.error(data.message);
+      }
+    } catch (error) {
+         toast.error(error.message);
+
+    }
   };
 
   useEffect(() => {
@@ -133,7 +165,7 @@ const Blog = () => {
       </div>
       <Footer />
     </div>
-  ) : <Loader/>  //for the load to wrong id enter page
+  ) : <Loader />  //for the load to wrong id enter page
 };
 
 export default Blog;
