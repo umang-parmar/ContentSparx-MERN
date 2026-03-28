@@ -15,13 +15,14 @@ import Login from "./components/admin/Login.jsx";
 import 'quill/dist/quill.snow.css'
 
 import { AppProvider } from "./context/AppContext.jsx";
+import {Toaster} from 'react-hot-toast'
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
 
     <BrowserRouter>
       <AppProvider>
-
+        <Toaster/>
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/blog/:id" element={<Blog />} />
@@ -36,7 +37,7 @@ createRoot(document.getElementById("root")).render(
           </Route>
 
         </Routes>
-      </AppProvider> //use context fileeeeeee
+      </AppProvider>
 
     </BrowserRouter>
   </StrictMode >
