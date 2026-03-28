@@ -29,7 +29,7 @@ export const AppProvider = ({ children }) => {
         }
     }
 
-    //execute these fun. whenever we will open the application
+    //execute these fun. whenever we will open the application  store blog data into blogstate
     useEffect(()=>{
         fetchBlogs();
     },[])
