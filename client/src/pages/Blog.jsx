@@ -6,6 +6,9 @@ import Moment from "moment";
 import Footer from "../components/Footer";
 import Loader from "../components/Loader";
 import { useAppContext } from "../context/AppContext";
+import toast from "react-hot-toast";
+import { Toaster } from "react-hot-toast";
+
 
 // for the blogs display into the detail
 
@@ -26,7 +29,7 @@ const Blog = () => {
       const { data } = await axios.get(`/blog/${id}`)
       data.success ? setData(data.singleBlog) : toast.error(data.message)
     } catch (error) {
-      error.error(data.message)
+      toast.error(error.message)
     }
     //set the the according to the id backend and client
   };
@@ -54,6 +57,7 @@ const Blog = () => {
         toast.success(data.message)
         setName('')
         setContent('')
+        fetchComments()   // refresh comments
       } else {
         toast.error(data.message);
       }
@@ -64,8 +68,8 @@ const Blog = () => {
   };
 
   useEffect(() => {
-    (fetchBlogData(), // for the ui automatically change
-      fetchComments());
+    fetchBlogData();
+    fetchComments();
   }, []);
 
   //we will display ui wrote into the return not logic easy
