@@ -123,15 +123,42 @@ app.get("/blog/:id", async (req, res) => {
 
 // ================= DELETE BLOG =================
 
-app.get("/blog/delete/:id", async (req, res) => {
-  const { id } = req.params;
+app.post("/blog/delete", async (req, res) => {
+  try {
+    const { id } = req.body;
 
-  await Blog.deleteOne({ _id: id });
-  await Comment.deleteMany({ blog: id });
+    console.log("Delete request for blog:", id);
 
-  res.json({ success: true, message: "Blog deleted" });
+    if (!id) {
+      return res.json({
+        success: false,
+        message: "Blog ID is required",
+      });
+    }
+
+    const deletedBlog = await Blog.findByIdAndDelete(id);
+
+    if (!deletedBlog) {
+      return res.json({
+        success: false,
+        message: "Blog not found",
+      });
+    }
+
+    await Comment.deleteMany({ blog: id });
+
+    res.json({
+      success: true,
+      message: "Blog deleted successfully",
+    });
+  } catch (error) {
+    console.log(error);
+    res.json({
+      success: false,
+      message: error.message,
+    });
+  }
 });
-
 // ================= TOGGLE PUBLISH =================
 
 app.post("/blog/toggle-publish", async (req, res) => {
