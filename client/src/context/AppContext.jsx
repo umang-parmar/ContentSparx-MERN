@@ -21,7 +21,7 @@ export const AppProvider = ({ children }) => {
     const fetchBlogs = async () => {
         try {
            const {data} = await axios.get('/allblog');
-           data.success ? setBlogs(data.blogs) : toast.error(data.message)
+           data.success ? setBlogs(data.allBlog) : toast.error(data.message)
 
            //display the notification error we use react-hot-toast
         } catch (error) {
@@ -51,5 +51,6 @@ export const useAppContext = ()=>{
 }
 // making the API call we use axios package 
  
+
 
 

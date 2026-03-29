@@ -1,140 +1,254 @@
 import express from "express";
-const app = express();
 import mongoose from "mongoose";
 import cors from "cors";
+import multer from "multer";
+import path from "path";
+
+const app = express();
+
+app.use(cors());
+app.use(express.json());
+
+// ------------------- MongoDB -------------------
 
 async function main() {
-  await mongoose.connect("mongodb+srv://umang2502parmar_db_user:umang@cluster0.fon1bor.mongodb.net/?appName=Cluster0");
+  await mongoose.connect(
+    "mongodb+srv://umang2502parmar_db_user:umang@cluster0.fon1bor.mongodb.net/blogDB"
+  );
 }
 
-const blogSchema = new mongoose.Schema({
-  title: { type: String, required: true },
-  subTitle: { type: String },
-  description: { type: String, required: true },
-  category: { type: String, required: true },
-  img: { type: String, required: true },
-  isPublished: { type: Boolean, default: false },
-}, { timestamps: true });
+// ------------------- Multer Setup -------------------
+
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, "uploads/");
+  },
+  filename: function (req, file, cb) {
+    cb(null, Date.now() + path.extname(file.originalname));
+  },
+});
+
+const upload = multer({ storage });
+
+// serve uploaded images
+app.use("/uploads", express.static("uploads"));
+
+// ------------------- Blog Schema -------------------
+
+const blogSchema = new mongoose.Schema(
+  {
+    title: { type: String, required: true },
+    subTitle: { type: String },
+    description: { type: String, required: true },
+    category: { type: String, required: true },
+    img: { type: String, required: true },
+    isPublished: { type: Boolean, default: false },
+  },
+  { timestamps: true }
+);
 
 const Blog = mongoose.model("Blog", blogSchema);
 
-app.use(express.json());
-app.use(cors());
+// ------------------- Comment Schema -------------------
 
-app.listen(3000, async () => {
-  console.log("server is started");
-  await main();
-  console.log("mongo connected");
-});
-
-app.get("/", async (req, res) => {
-  res.send("welcome");
-});
-
-//new blog
-app.post("/newblog", async (req, res) => {
-  const { title, subTitle, description, category, img, isPublished } = req.body;
-  const blog = new Blog({ title, subTitle, description, category, img, isPublished });
-  await blog.save();
-  res.json({ msg: "Success blog added!" });
-});
-
-// get all blogs
-app.get("/allblog", async (req, res) => {
-  const allBlog = await Blog.find({ isPublished: true });
-  // console.log(allBlog);
-  res.json({ allBlog });
-});
-
-// get blogs by id
-app.get("/blog/:id", async (req, res) => {
-  const { id } = req.params;
-  const singleBlog = await Blog.findById(id);
-  res.json({ singleBlog });
-});
-
-//delete blog by id 
-app.get("/blog/delete/:id", async (req, res) => {
-  const { id } = req.params;
-  const deleteBlog = await Blog.deleteOne({ _id: id });
- 
-  //Delete All Comments Associated With The Blog
-  await Comment.deleteMany({blog:id });
-
-  res.json({ msg: "Delete" });
-});
-
-//toggle-publish True:-Show blogs False:-dont show blogs
-app.post("/blog/toggle-publish", async (req, res) => {
-  const { id } = req.body;
-  const blog = await Blog.findById(id);
-  blog.isPublished = !blog.isPublished;
-  await blog.save();
-  res.json({ msg: "Publish status updated", isPublished: blog.isPublished });
-})
-
-//For the comment on the blogs--------------------------------------------------------------------------   
-
-const commentSchema = new mongoose.Schema({
-  blog: { type: mongoose.Schema.Types.ObjectId, ref: 'blog', required: true },
-  name: { type: String, required: true },
-  content: { type: String, required: true },
-  isApproved: { type: Boolean, default: false },
-}, { timestamps: true });
+const commentSchema = new mongoose.Schema(
+  {
+    blog: { type: mongoose.Schema.Types.ObjectId, ref: "Blog", required: true },
+    name: { type: String, required: true },
+    content: { type: String, required: true },
+    isApproved: { type: Boolean, default: false },
+  },
+  { timestamps: true }
+);
 
 const Comment = mongoose.model("Comment", commentSchema);
 
+// ------------------- Server -------------------
+
+app.listen(3000, async () => {
+  console.log("Server started on port 3000");
+  await main();
+  console.log("MongoDB Connected");
+});
+
+// ------------------- Routes -------------------
+
+app.get("/", (req, res) => {
+  res.send("Welcome");
+});
+
+// ================= NEW BLOG =================
+
+app.post("/newblog", upload.single("image"), async (req, res) => {
+  try {
+    const blogData = JSON.parse(req.body.blog);
+
+    const newBlog = new Blog({
+      title: blogData.title,
+      subTitle: blogData.subTitle,
+      description: blogData.description,
+      category: blogData.category,
+      isPublished: blogData.isPublished,
+      img: req.file ? `/uploads/${req.file.filename}` : null
+    });
+
+    await newBlog.save();
+
+    res.json({
+      success: true,
+      message: "Blog added successfully",
+    });
+  } catch (error) {
+    res.json({
+      success: false,
+      message: error.message,
+    });
+  }
+});
+
+// ================= GET ALL BLOGS =================
+
+app.get("/allblog", async (req, res) => {
+  const allBlog = await Blog.find({ isPublished: true }).sort({ createdAt: -1 });
+  res.json({ success: true, allBlog });
+});
+
+// ================= GET BLOG BY ID =================
+
+app.get("/blog/:id", async (req, res) => {
+  const { id } = req.params;
+  const singleBlog = await Blog.findById(id);
+  res.json({ success: true, singleBlog });
+});
+
+// ================= DELETE BLOG =================
+
+app.get("/blog/delete/:id", async (req, res) => {
+  const { id } = req.params;
+
+  await Blog.deleteOne({ _id: id });
+  await Comment.deleteMany({ blog: id });
+
+  res.json({ success: true, message: "Blog deleted" });
+});
+
+// ================= TOGGLE PUBLISH =================
+
+app.post("/blog/toggle-publish", async (req, res) => {
+  const { id } = req.body;
+
+  const blog = await Blog.findById(id);
+
+  blog.isPublished = !blog.isPublished;
+
+  await blog.save();
+
+  res.json({
+    success: true,
+    message: "Publish status updated",
+    isPublished: blog.isPublished,
+  });
+});
+
+// ================= ADD COMMENT =================
+
 app.post("/add-comment", async (req, res) => {
   const { blog, name, content } = req.body;
-  await Comment.create({ blog, name, content }) //create new data into the DB
-  res.json({ success: true, message: 'Comment added for review' })
-})
+
+  await Comment.create({ blog, name, content });
+
+  res.json({
+    success: true,
+    message: "Comment added for review",
+  });
+});
+
+// ================= GET BLOG COMMENTS =================
 
 app.post("/comments", async (req, res) => {
   const { blogId } = req.body;
-  const comments = await Comment.find({ blog: blogId, isApproved: true }).sort({ createdAt: -1 });
-  res.json({ success: true, comments })
-})
 
-//--------------------------------------------------------------------------------------------------------------
+  const comments = await Comment.find({
+    blog: blogId,
+    isApproved: true,
+  }).sort({ createdAt: -1 });
 
-//get bloglist for admin find all blog post doesnt matter isApproved or not
+  res.json({
+    success: true,
+    comments,
+  });
+});
+
+// ================= ADMIN BLOG LIST =================
+
 app.get("/blogs", async (req, res) => {
   const blogs = await Blog.find({}).sort({ createdAt: -1 });
-  res.json({ success: true, blogs })
-})
 
-//admin can see all comments doesnt matter isApproved or not
+  res.json({
+    success: true,
+    blogs,
+  });
+});
+
+// ================= ADMIN COMMENTS =================
+
 app.get("/comments", async (req, res) => {
-  const comments = await Comment.find({}).populate("blog").sort({ createdAt: -1 });
-  res.json({ success: true, comments })
-})
+  const comments = await Comment.find({})
+    .populate("blog")
+    .sort({ createdAt: -1 });
 
-//get dashboard data total blog,comment,draft number etc...
+  res.json({
+    success: true,
+    comments,
+  });
+});
+
+// ================= DASHBOARD =================
+
 app.get("/dashboard", async (req, res) => {
-  const recentBlogs = await Blog.find({}).sort({ cratedAt: -1 }).limit(5);
-  const blogs = await Blog.countDocuments(); // total no. of blogs count
-  const comments = await Comment.countDocuments(); //total no. of comments
-  const drafts = await Blog.countDocuments({ isPublished: false }); //blog is not published which is counted into the draft
+  const recentBlogs = await Blog.find({})
+    .sort({ createdAt: -1 })
+    .limit(5);
+
+  const blogs = await Blog.countDocuments();
+  const comments = await Comment.countDocuments();
+  const drafts = await Blog.countDocuments({ isPublished: false });
 
   const dashboardData = {
-    blogs, comments, drafts, recentBlogs
-  }
-  res.json({ success: true, dashboardData })
-})
+    blogs,
+    comments,
+    drafts,
+    recentBlogs,
+  };
 
-//Delete the comment by id 
+  res.json({
+    success: true,
+    dashboardData,
+  });
+});
+
+// ================= DELETE COMMENT =================
+
 app.post("/delete-comment", async (req, res) => {
   const { id } = req.body;
-  await Comment.findByIdAndDelete(id);
-  res.json({ success: true, message: "comment deleted successfully" })
-})
 
-//Approve the comment by id 
+  await Comment.findByIdAndDelete(id);
+
+  res.json({
+    success: true,
+    message: "Comment deleted successfully",
+  });
+});
+
+// ================= APPROVE COMMENT =================
+
 app.post("/approve-comment", async (req, res) => {
   const { id } = req.body;
-  await Comment.findByIdAndUpdate(id,{isApproved:true});
-  res.json({ success: true, message: "comment Approved successfully" })
-})
-//complete the backend of our website connection of backend and frontend is IC...
 
+  await Comment.findByIdAndUpdate(id, { isApproved: true });
+
+  res.json({
+    success: true,
+    message: "Comment approved successfully",
+  });
+});

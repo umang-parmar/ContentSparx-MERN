@@ -12,7 +12,7 @@ import { useAppContext } from "../context/AppContext";
 const Blog = () => {
   const { id } = useParams();
 
-  const { axios } = useAppContext
+  const { axios } = useAppContext()
 
   const [data, setData] = useState(null);
   const [comments, setComments] = useState([]);
@@ -24,7 +24,7 @@ const Blog = () => {
   const fetchBlogData = async () => {
     try {
       const { data } = await axios.get(`/blog/${id}`)
-      data.success ? setData(data.blog) : toast.error(data.message)
+      data.success ? setData(data.singleBlog) : toast.error(data.message)
     } catch (error) {
       error.error(data.message)
     }
@@ -33,32 +33,32 @@ const Blog = () => {
 
   const fetchComments = async (e) => {
     try {
-      const { data } = await axios.post('/comments',{blogId: id})
-      if(data.success){
+      const { data } = await axios.post('/comments', { blogId: id })
+      if (data.success) {
         setComments(data.comments)
-      }else{
+      } else {
         toast.error(data.message);
       }
 
     } catch (error) {
-        toast.error(error.message);
+      toast.error(error.message);
 
     }
   };
-//post a new comment functionality 
+  //post a new comment functionality 
   const addComment = async (e) => {
     e.preventDefault();
     try {
-      const { data } = await axios.post('/add-comment',{blog: id,name,content})
-     if(data.success){
-      toast.success(data.message)
-      setName('')
-      setContent('')
-    }else{
+      const { data } = await axios.post('/add-comment', { blog: id, name, content })
+      if (data.success) {
+        toast.success(data.message)
+        setName('')
+        setContent('')
+      } else {
         toast.error(data.message);
       }
     } catch (error) {
-         toast.error(error.message);
+      toast.error(error.message);
 
     }
   };
@@ -93,8 +93,11 @@ const Blog = () => {
       </div>
 
       <div className="mx-4 max-w-5xl md:mx-auto my-10 mt-6 ">
-        <img src={data.image} alt="" className="rounded-3xl mb-5" />
-        {/* rich-text class & description styling take into the index.css file  */}
+        <img
+          src={`http://localhost:3000${data.img}`}
+          alt=""
+          className="rounded-3xl mb-5"
+        />        {/* rich-text class & description styling take into the index.css file  */}
         <div
           className="rich-text max-w-3xl mx-auto"
           dangerouslySetInnerHTML={{ __html: data.description }}

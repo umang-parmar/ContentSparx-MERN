@@ -7,7 +7,8 @@ import { useAppContext } from "../context/AppContext";
 const BlogList = () => {
   const [menu, setMenu] = useState("All");
   //add fun to display the blogdata from the database
-  const { blogs, input } = useAppContext();
+  // const { blogs, input } = useAppContext(); 
+  const { blogs = [], input } = useAppContext();
 
   const filteredBlogs = () => {
     if (input === '') {
@@ -43,7 +44,7 @@ const BlogList = () => {
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-8 mb-24 mx-8 sm:mx-16 xl:mx-40">
         {/* blog cards */}
         {/* for filter the blog by the category logic these */}
-        {filteredBlogs()         // blog_data 
+        {filteredBlogs()         
           .filter((blog) => (menu === "All" ? true : blog.category === menu))
           .map((blog) => (
             <BlogCard key={blog._id} blog={blog} />
@@ -54,3 +55,4 @@ const BlogList = () => {
 };
 
 export default BlogList;
+// replace blog_data with filteredBlogs()
