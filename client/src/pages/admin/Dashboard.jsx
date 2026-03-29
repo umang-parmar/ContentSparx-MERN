@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react'
 import { assets, dashboard_data } from '../../assets/assets'
 import BlogTableitem from './BlogTableitem'
+import { useAppContext } from '../../context/AppContext'
+import toast from "react-hot-toast";
 
 const Dashboard = () => {
 
@@ -11,9 +13,23 @@ const Dashboard = () => {
     recentBlogs:[]
   })
 
-  const fetchDashboard= async () => {
-    setdashboardData(dashboard_data);
+  //functionality for dashboard page blog comment draft count 
+  const {axios} = useAppContext();
+
+const fetchDashboard = async () => {
+  try {
+    const { data } = await axios.get('/dashboard')
+
+    if (data.success) {
+      setdashboardData(data.dashboardData)
+    } else {
+      toast.error(data.message)
+    }
+
+  } catch (error) {
+    toast.error(error.message)
   }
+}
 
   useEffect(()=>{
     fetchDashboard()
