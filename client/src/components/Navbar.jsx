@@ -12,7 +12,7 @@ const Navbar = () => {
       {/* From assets.js images are selected */}
       <img
         onClick={() => {
-          navigate("/home");
+          navigate("/");
         }}
         src={assets.logo}
         alt="logo"
