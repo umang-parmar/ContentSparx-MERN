@@ -50,7 +50,7 @@ export const useAppContext = ()=>{
     return useContext(AppContext) //data get from the context file call these fun.. 
 }
 // making the API call we use axios package 
- 
+ export default AppContext
 
 
 

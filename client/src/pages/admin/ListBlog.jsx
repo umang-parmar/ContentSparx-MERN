@@ -1,13 +1,28 @@
 import React, { useEffect, useState } from 'react'
 import { blog_data } from '../../assets/assets';
 import BlogTableitem from './BlogTableitem';
+import AppContext, { useAppContext } from '../../context/AppContext';
 
 const ListBlog = () => {
 
 const [blogs, setBlogs] = useState([]);
+const {axios} = useAppContext();
+
 
 const fetchBlogs = async ()=>{
-  setBlogs(blog_data)
+
+  // Blog lists feature added logic 
+  try {
+    const {data} = await axios.get('/blogs')
+    if(data.success){
+      setBlogs(data.blogs)
+    }else{
+      toast.error(data.message)
+    }
+  } catch (error) {
+          toast.error(error.message)
+
+  }
 }
 
 useEffect(()=>{
