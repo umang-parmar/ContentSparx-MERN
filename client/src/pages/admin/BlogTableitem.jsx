@@ -7,7 +7,7 @@ const BlogTableitem = ({ blog, fetchBlogs, index }) => {
 
   //into the bloglist publish and delete the blog functionality added successfully
   const { axios } = useAppContext();
-  
+
   const deleteBlog = async () => {
     const confirm = window.confirm('Are you sure you want to delete this blog?')
     if (!confirm) return;
@@ -15,21 +15,30 @@ const BlogTableitem = ({ blog, fetchBlogs, index }) => {
       const { data } = await axios.post('/blog/delete', { id: blog._id })
       if (data.success) {
         toast.success(data.message)
-        await  fetchBlogs(); // refresh list
+        await fetchBlogs(); // refresh list
       } else {
         toast.error(data.message)
 
       }
     } catch (error) {
       toast.error(error.message)
-
     }
-    
-    
   }
-  
 
-
+  //into the bloglist toggle publish or not the blog functionality added successfully
+  const togglePublish = async () => {
+    try {
+      const { data } = await axios.post('/blog/toggle-publish', { id: blog._id })
+      if (data.success) {
+        toast.success(data.message)
+        await fetchBlogs(); // refresh list
+      } else {
+        toast.error(data.message)
+      }
+    } catch (error) {
+      toast.error(error.message)
+    }
+  }
   return (
     <tr className="border-y border-gray-300">
       <th className="px-2 py-4">{index}</th>
@@ -41,7 +50,7 @@ const BlogTableitem = ({ blog, fetchBlogs, index }) => {
         </p>
       </td>
       <td className="px-2 py-4 flex text-xs gap-3 ">
-        <button className="border px-2 py-0.5 mt-1 rounded cursor-pointer"> {blog.isPublished ? "Unpublished" : "Published"}</button>
+        <button onClick={togglePublish} className="border px-2 py-0.5 mt-1 rounded cursor-pointer"> {blog.isPublished ? "Unpublished" : "Published"}</button>
         <img onClick={deleteBlog} src={assets.cross_icon} className="w-8 hover:scale-110 transition-all cursor-pointer" alt="" />
       </td>
     </tr>
