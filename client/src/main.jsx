@@ -19,7 +19,7 @@ import { Toaster } from 'react-hot-toast'
 
 const RequireAdmin = ({ children }) => {
   const { isAdmin } = useAppContext();
-  return isAdmin ? children : <Navigate to="/admin/login" replace />;
+  return isAdmin ? children : <Navigate to="/" replace />;
 };
 
 createRoot(document.getElementById("root")).render(
