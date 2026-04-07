@@ -1,9 +1,11 @@
+import dotenv from "dotenv";
+dotenv.config();
 import express from "express";
 import mongoose from "mongoose";
 import cors from "cors";
 import multer from "multer";
 import path from "path";
-
+import generateAIContent from "./gemini.js";
 const app = express();
 
 app.use(cors());
@@ -11,7 +13,7 @@ app.use(express.json());
 
 // ------------------- MongoDB -------------------
 
-async function main() {
+async function connectDB() {
   await mongoose.connect(
     "mongodb+srv://umang2502parmar_db_user:umang@cluster0.fon1bor.mongodb.net/blogDB"
   );
@@ -67,7 +69,7 @@ const Comment = mongoose.model("Comment", commentSchema);
 
 app.listen(3000, async () => {
   console.log("Server started on port 3000");
-  await main();
+await connectDB();
   console.log("MongoDB Connected");
 });
 
@@ -278,4 +280,35 @@ app.post("/approve-comment", async (req, res) => {
     success: true,
     message: "Comment approved successfully",
   });
+});
+
+//for the gemini api generate content using AI Powered
+app.post("/generate", async (req, res) => {
+  try {
+    const { prompt } = req.body;
+    console.log(prompt);
+    
+
+    if (!prompt) {
+      return res.json({ success: false, message: "Prompt is required" });
+    }
+
+    const content = await generateAIContent(
+      prompt + " Generate a blog content for this topic in markdown format"
+    );
+
+    res.json({
+      success: true,
+      content
+    });
+
+  } catch (error) {
+    // This will show you EXACTLY why it's failing in your terminal
+    console.error("AI Route Error:", error.message);
+
+    res.status(500).json({
+      success: false,
+      message: error.message || "AI generation failed"
+    });
+  }
 });

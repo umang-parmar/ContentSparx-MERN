@@ -1,10 +1,18 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { assets } from "../../assets/assets";
-import { Outlet, useNavigate } from "react-router";
+import { Outlet, useNavigate } from "react-router-dom";
 import Sidebar from "../../components/admin/Sidebar";
+import { useAppContext } from "../../context/AppContext.jsx";
 // navigation bar and sidebar created which is used in multiplt places
 const Layout = () => {
+  const { adminLogout, isAdmin } = useAppContext();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!isAdmin) {
+      navigate("/", { replace: true });
+    }
+  }, [isAdmin, navigate]);
 
   return (
     <>
@@ -13,10 +21,10 @@ const Layout = () => {
           src={assets.logo}
           alt=""
           className="w-32 sm:w-40 cursor-pointer"
-          onClick={() => navigate("/")}
-        ></img>
+          onClick={adminLogout}
+        />
         <button
-          onClick={() => navigate("/")}
+          onClick={adminLogout}
           className="text-sm px-8 py-2 bg-indigo-500 text-white rounded-full cursor-pointer hover:bg-indigo-600 transition"
         >
           Logout

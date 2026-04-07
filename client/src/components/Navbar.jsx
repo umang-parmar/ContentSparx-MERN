@@ -4,7 +4,7 @@ import { useAppContext } from "../context/AppContext";
 
 const Navbar = () => {
   // const navigate = useNavigate(); 
-  const {navigate} = useAppContext()
+  const { navigate } = useAppContext()
 
 
   return (
@@ -18,10 +18,10 @@ const Navbar = () => {
         alt="logo"
         className="w-32 sm:w-44 cursor-pointer"
       />
-
+      // login button
       <button
         onClick={() => {
-          navigate("/admin");
+          navigate("/admin/login");
         }}
         className="flex items-center gap-2 rounded-full text-sm cursor-pointer text-white bg-blue-700 px-10 py-2.5 hover:bg-blue-900 hover:scale-105"
       >

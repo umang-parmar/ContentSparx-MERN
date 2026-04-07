@@ -2,7 +2,7 @@ import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import "./index.css";
 import App from "./App.jsx";
-import { BrowserRouter, Route, Routes } from "react-router";
+import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import Blog from "./pages/Blog";
 import Home from "./pages/Home.jsx";
 import Layout from "./pages/admin/Layout.jsx";
@@ -14,22 +14,26 @@ import Login from "./components/admin/Login.jsx";
 
 import 'quill/dist/quill.snow.css'
 
-import { AppProvider } from "./context/AppContext.jsx";
-import {Toaster} from 'react-hot-toast'
+import { AppProvider, useAppContext } from "./context/AppContext.jsx";
+import { Toaster } from 'react-hot-toast'
+
+const RequireAdmin = ({ children }) => {
+  const { isAdmin } = useAppContext();
+  return isAdmin ? children : <Navigate to="/admin/login" replace />;
+};
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
-
     <BrowserRouter>
       <AppProvider>
-        <Toaster/>
+        <Toaster />
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/blog/:id" element={<Blog />} />
 
-          {/* for the admin dashboard */}
-          <Route path="/admin" element={true ? <Layout /> : <Login />}>
-            {/* using outlet component use these child components  */}
+          <Route path="/admin" element={<Navigate to="/admin/login" replace />} />
+          <Route path="/admin/login" element={<Login />} />
+          <Route path="/admin/*" element={<RequireAdmin><Layout /></RequireAdmin>}>
             <Route index element={<Dashboard />} />
             <Route path="addBlog" element={<AddBlog />} />
             <Route path="listBlog" element={<ListBlog />} />
@@ -38,7 +42,6 @@ createRoot(document.getElementById("root")).render(
 
         </Routes>
       </AppProvider>
-
     </BrowserRouter>
-  </StrictMode >
+  </StrictMode>
 );
