@@ -5,6 +5,7 @@ import App from "./App.jsx";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import Blog from "./pages/Blog";
 import Home from "./pages/Home.jsx";
+import HomeNew from "./pages/HomeNew.jsx";
 import Layout from "./pages/admin/Layout.jsx";
 import Dashboard from "./pages/admin/Dashboard.jsx";
 import AddBlog from "./pages/admin/AddBlog.jsx";
@@ -28,7 +29,7 @@ createRoot(document.getElementById("root")).render(
       <AppProvider>
         <Toaster />
         <Routes>
-          <Route path="/" element={<Home />} />
+          <Route path="/" element={<HomeNew />} />
           <Route path="/blog/:id" element={<Blog />} />
 
           <Route path="/admin" element={<Navigate to="/admin/login" replace />} />
